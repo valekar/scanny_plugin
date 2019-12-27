@@ -1,3 +1,7 @@
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 group 'com.valekar.scanny'
 version '1.0'
 
@@ -15,7 +19,14 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
+        mavenLocal()
         jcenter()
+        maven {
+            url 'https://maven.google.com'
+        }
+        maven {
+            url  "http://dl.bintray.com/steveliles/maven"
+        }
     }
 }
 
@@ -31,4 +42,14 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+}
+
+dependencies {
+    def googlePlayServicesVersion = safeExtGet("googlePlayServicesVersion", '11.8.0')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+
+    implementation "com.google.android.gms:play-services-basement:$googlePlayServicesVersion"
+    implementation "com.google.android.gms:play-services-vision:$googlePlayServicesVersion"
+    implementation 'online.devliving:mobilevision-pipeline:1.0.7'
+    implementation 'org.opencv:OpenCV-Android:3.1.0'
 }
