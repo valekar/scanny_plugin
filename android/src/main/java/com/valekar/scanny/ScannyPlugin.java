@@ -19,7 +19,7 @@ public class ScannyPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    final MethodChannel channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "scanny");
+    final MethodChannel channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "scanny");
     channel.setMethodCallHandler(ScannyPlugin.scannyMethodHandler());
 
   }

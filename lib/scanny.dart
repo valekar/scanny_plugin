@@ -10,4 +10,10 @@ class Scanny {
     final String version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
+  
+  static Future<String> get scanForUri async {
+    final uri = await  _channel.invokeMethod("callScanner");
+    return uri;
+
+  }
 }

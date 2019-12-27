@@ -10,7 +10,11 @@ public class ScannyMethodHandler implements   MethodChannel.MethodCallHandler {
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         if (call.method.equals("getPlatformVersion")) {
             result.success("Android " + android.os.Build.VERSION.RELEASE);
-        } else {
+        } else if(call.method.equals("callScanner")){
+            result.success("This is a dummy URI");
+        }
+            // call the scanner from here
+        else {
             result.notImplemented();
         }
     }
