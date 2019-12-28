@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
+import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:scanny/scanny.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -13,13 +14,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  String _imageURI = 'No Image Uri yet';
+  String _imageURI;
+
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
-    scanDocument();
+    //scanDocument();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -49,12 +51,17 @@ class _MyAppState extends State<MyApp> {
     String uri;
     try {
       uri = await Scanny.scanForUri;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('customImageFile', uri);
+      //prefs.
     }
     catch(error) {
-      uri = "Error: Could not get uri";
+      print(error);
+      uri = null;
     }
 
   setState(() {
+
     _imageURI = uri;
   });
 
@@ -72,10 +79,16 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-            Text('Running on: $_platformVersion\n'),
-            Text("Scanned doc URI is : $_imageURI\n"),
+              Text('Running on: $_platformVersion\n'),
+              Text("Scanned doc URI is : $_imageURI\n"),
+              Container(child:
+              _imageURI == null? Text("No Image loaded") : Image.network(_imageURI), height: 100, width: 100,)
+
+
           ],),
+
         ),
+        floatingActionButton: FloatingActionButton(child: Icon(Icons.camera_enhance), backgroundColor: Colors.teal, onPressed: scanDocument,),
       ),
     );
   }
