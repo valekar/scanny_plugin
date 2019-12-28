@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import devliving.online.cvscanner.crop.CropImageActivity;
 import devliving.online.cvscanner.util.Util;
+import io.flutter.Log;
 
 /**
  * Created by Mehedi Hasan Khan <mehedi.mailing@gmail.com> on 9/14/17.
@@ -76,13 +77,15 @@ public final class CVScanner {
     }
 
     public static void startManualCropper(Activity activity, Uri inputImageUri, int reqCode){
-        Intent intent = new Intent(activity, CropImageActivity.class);
+            if(inputImageUri!=null) {
+                Intent intent = new Intent(activity, CropImageActivity.class);
+                intent.putExtra(CropImageActivity.EXTRA_IMAGE_URI, inputImageUri.toString());
+                activity.startActivityForResult(intent, reqCode);
+            }
 
-        intent.putExtra(CropImageActivity.EXTRA_IMAGE_URI, inputImageUri.toString());
-        activity.startActivityForResult(intent, reqCode);
     }
 
-    public  static void startManualCropper(Activity activity, Uri imageUri, int reqCode, @ColorRes int buttonTint,
+    public static  void startManualCropper(Activity activity, Uri imageUri, int reqCode, @ColorRes int buttonTint,
                                            @ColorRes int buttonTintSecondary, @DrawableRes int rotateLeftIconRes,
                                            @DrawableRes int rotateRightIconRes, @DrawableRes int saveButtonIconRes){
         Intent intent = new Intent(activity, CropImageActivity.class);

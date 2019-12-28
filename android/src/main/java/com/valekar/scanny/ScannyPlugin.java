@@ -3,61 +3,72 @@ package com.valekar.scanny;
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/** ScannyPlugin */
+/**
+ * ScannyPlugin
+ */
 public class ScannyPlugin implements FlutterPlugin, ActivityAware {
 
-
-  @Override
-  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    final MethodChannel channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "scanny");
-    channel.setMethodCallHandler(ScannyPlugin.scannyMethodHandler());
-
-  }
+    private FlutterPluginBinding flutterPluginBinding;
 
 
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "scanny");
-    channel.setMethodCallHandler(ScannyPlugin.scannyMethodHandler());
-  }
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+        this.flutterPluginBinding = flutterPluginBinding;
+    }
 
 
+    public static void registerWith(Registrar registrar) {
+        ScannyPlugin scannyPlugin = new ScannyPlugin();
+        scannyPlugin.startListingForOldVersion(registrar.activity(), registrar.messenger(), registrar);
+    }
 
-  @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-  }
 
-  private static ScannyMethodHandler scannyMethodHandler(){
-    return new ScannyMethodHandler();
-  }
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    }
 
-  @Override
-  public void onAttachedToActivity(ActivityPluginBinding binding) {
-    //binding::addActivityResultListener;
-  }
 
-  @Override
-  public void onDetachedFromActivityForConfigChanges() {
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        startListening(binding.getActivity(), flutterPluginBinding.getBinaryMessenger(), binding);
 
-  }
+    }
 
-  @Override
-  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
-    onAttachedToActivity(binding);
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        flutterPluginBinding = null;
+    }
 
-  }
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+        onAttachedToActivity(binding);
 
-  @Override
-  public void onDetachedFromActivity() {
+    }
 
-  }
+    @Override
+    public void onDetachedFromActivity() {
+
+    }
+
+    private void startListening(Activity activity, BinaryMessenger messenger, ActivityPluginBinding binding) {
+        ScannyMethodHandler scannyMethodHandler = new ScannyMethodHandler(activity, messenger, 1235);
+        binding.addActivityResultListener(scannyMethodHandler);
+
+    }
+
+
+    private void startListingForOldVersion(Activity activity, BinaryMessenger messenger, Registrar registrar) {
+        ScannyMethodHandler scannyMethodHandler = new ScannyMethodHandler(activity, messenger, 1235);
+        registrar.addActivityResultListener(scannyMethodHandler);
+
+    }
+
+
 }
