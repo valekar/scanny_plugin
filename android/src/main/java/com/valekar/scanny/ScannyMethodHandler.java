@@ -18,6 +18,7 @@ import devliving.online.cvscanner.CVScanner;
 import devliving.online.cvscanner.util.Util;
 import io.flutter.Log;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -33,8 +34,8 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
     private static final int REQ_CROP_IMAGE = 122;
     private static final int REQ_PERMISSIONS = 120;
     private Uri currentPhotoUri = null;
-    //
-    // private MethodChannel.Result result;
+    private ImageStreamHandler imageStreamHandler;
+
     final private int REQ_SCAN = 11;
     private String uri;
 
@@ -46,10 +47,13 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
     public ScannyMethodHandler(Activity activity, BinaryMessenger messenger, int id) {
         this.activity = activity;
         this.messenger = messenger;
-        this.channel = new MethodChannel(this.messenger, "plugins.flutter.io/scanny");
+        this.channel = new MethodChannel(this.messenger, "plugins.valekar.io/scanny");
         this.channel.setMethodCallHandler(this);
         this.id = id;
+        this.imageStreamHandler = new ImageStreamHandler();
         //this.currentPhotoUri = new Uri();
+        EventChannel eventChannel = new EventChannel(this.messenger, "plugins.valekar.io/image_uri");
+        eventChannel.setStreamHandler(imageStreamHandler);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
             result.success("Android " + android.os.Build.VERSION.RELEASE);
         } else if (call.method.equals("callScanner")) {
             getDocumentCrop();
-            result.success(currentPhotoUri.toString());
+            result.success(null);
         } else {
             result.notImplemented();
         }
@@ -123,8 +127,7 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
                         if (imageUri != null) {
                             Log.d("Image URI", imageUri.toString());
                             uri = imageUri.toString();
-                            currentPhotoUri = imageUri;
-                            //this.result.success(uri);
+                            imageStreamHandler.send("image_uri", uri);
                         }
                     }
                     break;

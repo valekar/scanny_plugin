@@ -21,6 +21,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    Scanny.getFinalUri.listen((result){
+      setState(() {
+        _imageURI = result;
+      });
+    });
     //scanDocument();
   }
 
@@ -60,10 +65,7 @@ class _MyAppState extends State<MyApp> {
       uri = null;
     }
 
-  setState(() {
 
-    _imageURI = uri;
-  });
 
   }
 
