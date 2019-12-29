@@ -13,6 +13,9 @@ import androidx.core.content.PermissionChecker;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import devliving.online.cvscanner.CVScanner;
 import devliving.online.cvscanner.util.Util;
@@ -52,7 +55,7 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
         this.id = id;
         this.imageStreamHandler = new ImageStreamHandler();
         //this.currentPhotoUri = new Uri();
-        EventChannel eventChannel = new EventChannel(this.messenger, "plugins.valekar.io/image_uri");
+        EventChannel eventChannel = new EventChannel(this.messenger, "plugins.valekar.io/image_event");
         eventChannel.setStreamHandler(imageStreamHandler);
     }
 
@@ -127,7 +130,13 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
                         if (imageUri != null) {
                             Log.d("Image URI", imageUri.toString());
                             uri = imageUri.toString();
-                            imageStreamHandler.send("image_uri", uri);
+                            byte[] imageBytArray = Util.fullyReadFileToBytes(file);
+                            Map<String, Object> results = new HashMap<>();
+                            results.put("image_uri", uri);
+                            results.put("image_array", imageBytArray);
+                            imageStreamHandler.send( results);
+
+
                         }
                     }
                     break;

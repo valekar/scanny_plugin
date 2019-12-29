@@ -4,36 +4,49 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class Scanny {
-  static const MethodChannel _channel =
+   static const MethodChannel _channel =
       const MethodChannel('plugins.valekar.io/scanny');
 
-  static const EventChannel _UriEventChannel = const EventChannel("plugins.valekar.io/image_uri");
+  static const EventChannel _ImageEventChannel = const EventChannel("plugins.valekar.io/image_event");
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
+
+   void scanForUri() {
+     _channel.invokeMethod("callScanner");
   }
 
-  static Future<dynamic> get scanForUri async {
-    final uri = await _channel.invokeMethod("callScanner");
-    //print("URI scanny plugin $uri" );
-    return uri;
-  }
-
-  static Stream<String> get getFinalUri {
-   return _UriEventChannel.receiveBroadcastStream().map(_uriGetter);
+   Stream<String> get getFinalUri {
+    return _ImageEventChannel.receiveBroadcastStream().map(_uriGetter);
   }
 
 
-  static String _uriGetter(dynamic map){
+  Stream<dynamic> get getImageBytes
+  {
+    return _ImageEventChannel.receiveBroadcastStream().map(_imageBytesGetter);
+  }
+
+   String _uriGetter(dynamic map){
     if( map is Map) {
-      return map['data'];
+      return map["image_uri"];
     }
+    return null;
+  }
 
+  dynamic _imageBytesGetter(dynamic map){
+    if( map is Map) {
+      return map["image_array"];
+    }
     return null;
   }
 
 
+}
+
+
+class ImageValues {
+  final imageByteArray;
+  final imageUri;
+
+  ImageValues(this.imageUri, this.imageByteArray);
 }
 
 

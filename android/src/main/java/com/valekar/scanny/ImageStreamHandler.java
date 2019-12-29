@@ -24,17 +24,14 @@ public class ImageStreamHandler implements StreamHandler {
         this.eventSink = null;
     }
 
-    public void send(final String channel, final Object data) {
+    public void send(final Object data) {
 
         new Handler(Looper.getMainLooper()).post(
             new Runnable() {
                 @Override
                 public void run() {
                     if(eventSink!=null){
-                        Map<String, Object> result = new HashMap<>();
-                        result.put("channel", channel);
-                        result.put("data", data);
-                        eventSink.success(result);
+                        eventSink.success(data);
                     }
                 }
             }

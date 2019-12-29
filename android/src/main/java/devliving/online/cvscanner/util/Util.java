@@ -18,8 +18,10 @@ import androidx.annotation.RequiresApi;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -253,6 +255,8 @@ public final class Util {
         }
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static boolean setExifRotation(Context context, Uri imageUri, int rotation) throws IOException {
         if (imageUri == null) return false;
 
@@ -300,5 +304,50 @@ public final class Util {
         int[] maxSize = new int[1];
         GLES10.glGetIntegerv(GLES10.GL_MAX_TEXTURE_SIZE, maxSize, 0);
         return maxSize[0];
+    }
+
+    public static byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+    public static byte[]  fullyReadFileToBytes(File f)  {
+        try {
+            int size = (int) f.length();
+            byte bytes[] = new byte[size];
+            byte tmpBuff[] = new byte[size];
+            FileInputStream fis = new FileInputStream(f);
+            ;
+            try {
+
+                int read = fis.read(bytes, 0, size);
+                if (read < size) {
+                    int remain = size - read;
+                    while (remain > 0) {
+                        read = fis.read(tmpBuff, 0, remain);
+                        System.arraycopy(tmpBuff, 0, bytes, size - remain, read);
+                        remain -= read;
+                    }
+                }
+            } catch (IOException e) {
+                throw e;
+            } finally {
+                fis.close();
+            }
+
+            return bytes;
+        }
+        catch (IOException ex){
+            Log.d("IOException", ex.getMessage());
+        }
+
+        return null;
     }
 }
