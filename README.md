@@ -33,8 +33,8 @@ class MyApp extends StatefulWidget {
 
 ## Scanny provides you with 2 methods
 
-    1. askPermissions  - for asking camera and storage permissions
-    2. callScanner  - This will instiate the scanner activity of the android
+1. askPermissions  - for asking camera and storage permissions
+2. callScanner  - This will instiate the scanner activity of the android
     
 
 ### askPermissions is straight forward to use
@@ -86,4 +86,22 @@ Displaying of the returned images can be done using ```Image.memory``` widget.
 ```
 Image.memory(_imageBytes
 ```
+
+## For contributions 
+Do Create pull and contribute. 
+
+## TODO
+1. Add IOS scanner (Major)
+2. Add passport scanning functionality
+ 
+# Thanks 
+I would really like to thank  
+
+1. https://github.com/Credntia/CVScanner for this wonderful scanner 
+2. https://github.com/Diastorm/rn-doc-scanner-android 
+ 
+# License 
+
+GNU General Public License v3.0
+Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights.
  
