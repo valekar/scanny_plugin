@@ -1,3 +1,5 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+# Flutter Document Scaanner for Android
+
+This is an initial unstable release for scanning documents 

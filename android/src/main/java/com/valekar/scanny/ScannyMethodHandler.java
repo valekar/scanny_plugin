@@ -13,7 +13,6 @@ import androidx.core.content.PermissionChecker;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,8 +61,9 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         //this.result = result;
-        if (call.method.equals("getPlatformVersion")) {
-            result.success("Android " + android.os.Build.VERSION.RELEASE);
+        if (call.method.equals("askPermissions")) {
+            askPermissions();
+            result.success(null);
         } else if (call.method.equals("callScanner")) {
             getDocumentCrop();
             result.success(null);
@@ -86,21 +86,25 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            if (PermissionChecker.checkSelfPermission(activity, Manifest.permission.CAMERA)
-                    != PermissionChecker.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PermissionChecker.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
-            }
-            if (PermissionChecker.checkSelfPermission(activity, Manifest.permission.CAMERA)
-                    != PermissionChecker.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, REQ_PERMISSIONS);
-            }
-            if (PermissionChecker.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PermissionChecker.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
-            }
         }
+    }
+
+
+    private void askPermissions() {
+        if (PermissionChecker.checkSelfPermission(activity, Manifest.permission.CAMERA)
+                != PermissionChecker.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PermissionChecker.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
+        }
+        if (PermissionChecker.checkSelfPermission(activity, Manifest.permission.CAMERA)
+                != PermissionChecker.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, REQ_PERMISSIONS);
+        }
+        if (PermissionChecker.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PermissionChecker.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
+        }
+
     }
 
 
@@ -134,8 +138,7 @@ public class ScannyMethodHandler implements MethodChannel.MethodCallHandler, Plu
                             Map<String, Object> results = new HashMap<>();
                             results.put("image_uri", uri);
                             results.put("image_array", imageBytArray);
-                            imageStreamHandler.send( results);
-
+                            imageStreamHandler.send(results);
 
                         }
                     }

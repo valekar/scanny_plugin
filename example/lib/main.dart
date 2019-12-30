@@ -15,25 +15,37 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   dynamic _imageBytes;
   final Scanny scanny;
-
   _MyAppState(this.scanny);
 
   @override
   void initState() {
     super.initState();
+    () async {
+      //ask permissions
+      scanDocument();
+    }();
 
-    scanny.getImageBytes.listen((imageBytes){
-      setState(() {
-        _imageBytes = imageBytes;
-      });
-    });
+  }
+
+
+  Future<void> askPermissions() async {
+    await scanny.askPermissions;
   }
 
 
 
-  void scanDocument()  {
+  Future<void> scanDocument() async {
     try {
-       scanny.scanForUri();
+      //ask permissions if permissions are not granted yet
+      await askPermissions();
+      //call the scanner
+       scanny.callScanner;
+       //listen to the results of activity
+       scanny.getImageBytes.listen((imageBytes){
+         setState(() {
+           _imageBytes = imageBytes;
+         });
+       });
     }
     catch(error) {
       print(error);
