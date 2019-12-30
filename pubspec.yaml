@@ -1,8 +1,8 @@
 name: scanny
-description: A new flutter plugin project.
+description: A plugin for scanning documents.
 version: 0.0.1
-author:
-homepage:
+author: Srinivas Valekar <srinivas.valekar@gmail.com>
+homepage: https://github.com/valekar/scanny_plugin
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
