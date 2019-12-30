@@ -84,11 +84,15 @@ We get the image results in the form of imageBytes so we store them in dynamic d
 Displaying of the returned images can be done using ```Image.memory``` widget.
 #### For instance
 ```
-Image.memory(_imageBytes
+Image.memory(_imageBytes)
 ```
 
+### For more info - Refer example folder under this repo
+The example flutter contains main.dart file. Please refer if get stuck along the way or ping me so that I can look into it.
+
+
 ## For contributions 
-Do Create pull and contribute. 
+Do Create pull and contribute. If you face any issues, please to create an issue.
 
 ## TODO
 1. Add IOS scanner (Major)
