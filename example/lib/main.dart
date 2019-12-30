@@ -1,43 +1,55 @@
+import 'dart:core';
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:scanny/scanny.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _MyAppState createState() => _MyAppState(new Scanny());
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  dynamic _imageBytes;
+  final Scanny scanny;
+  _MyAppState(this.scanny);
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    () async {
+      //ask permissions
+      scanDocument();
+    }();
+
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
+
+  Future<void> askPermissions() async {
+    await scanny.askPermissions;
+  }
+
+
+
+  Future<void> scanDocument() async {
     try {
-      platformVersion = await Scanny.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      //ask permissions if permissions are not granted yet
+      await askPermissions();
+      //call the scanner
+       scanny.callScanner;
+       //listen to the results of activity
+       scanny.getImageBytes.listen((imageBytes){
+         setState(() {
+           _imageBytes = imageBytes;
+         });
+       });
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+    catch(error) {
+      print(error);
+    }
   }
 
   @override
@@ -45,11 +57,18 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Scannny Plugin '),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _imageBytes == null? Text("No Image loaded"):  Image.memory(_imageBytes),
+
+          ],),
+
         ),
+        floatingActionButton: FloatingActionButton(child: Icon(Icons.camera_enhance), backgroundColor: Colors.teal, onPressed: scanDocument, ),
       ),
     );
   }
